@@ -4,19 +4,17 @@ import telebot
 import serverless_wsgi
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-# Задайте API_TOKEN и WEBHOOK_URL через переменные окружения в Vercel
-API_TOKEN = os.environ.get("API_TOKEN", "YOUR_TELEGRAM_API_TOKEN")
-# WEBHOOK_URL должен указывать на публичный URL вашего деплоя на Vercel, например: https://your-deployment.vercel.app/api/bot
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "https://your-deployment.vercel.app/api/bot")
+# Твой токен бота (желательно хранить в переменных окружения на Vercel)
+API_TOKEN = os.environ.get("API_TOKEN", "7727175707:AAEfv_J3tbPcBscm4lu3W7yRbCK3gUo3wfk")
+WEBHOOK_URL = f"https://testwebhuk-dusky.vercel.app/{API_TOKEN}"
 
 bot = telebot.TeleBot(API_TOKEN)
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-# Маршрут функции (обратите внимание, что указывать /api/bot не нужно, Vercel уже направит запросы из этой папки)
-@app.route("/", methods=["POST"])
+# Маршрут должен совпадать с частью URL, указанного при установке вебхука
+@app.route(f"/{API_TOKEN}", methods=["POST"])
 def webhook():
-    # Чтение update от Telegram
     update = telebot.types.Update.de_json(request.get_data(as_text=True))
     bot.process_new_updates([update])
     return "OK", 200
@@ -27,12 +25,17 @@ def start(message):
     web_app_info = telebot.types.WebAppInfo(url="https://x-0-pi.vercel.app/")
     button = telebot.types.InlineKeyboardButton(text="PLAY🕹️", web_app=web_app_info)
     markup.add(button)
-    bot.send_message(message.chat.id, "Привет! Нажми Кнопку чтобы открыть приложение.", reply_markup=markup)
+    bot.send_message(message.chat.id, "Привет! Нажми кнопку чтобы открыть приложение.", reply_markup=markup)
 
 # Точка входа для Vercel
 def handler(event, context):
     return serverless_wsgi.handle_request(app, event, context)
 
+# Локальный запуск для тестирования
 if __name__ == '__main__':
-    # Локальный запуск для тестирования
+    # Выставляем вебхук (один раз вручную или программно)
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL)
+    
+    # Запуск локально
     app.run(debug=True, port=5000)
