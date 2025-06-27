@@ -1,4 +1,4 @@
-aiogram
-python-dotenv
-fastapi
-uvicorn
+Flask
+pyTelegramBotAPI
+Werkzeug
+serverless-wsgi
