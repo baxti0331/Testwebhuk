@@ -2,19 +2,19 @@ import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import BotCommand
 from aiogram.utils.executor import start_webhook
-from dotenv import load_dotenv
 from fastapi import FastAPI
+from dotenv import load_dotenv
 
 # Загрузка переменных окружения из .env
 load_dotenv()
 
 # Получение токена из .env
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "7563958637:AAFWLdH8ok1EVc4SF8OJTEcv6UCV2aZMqIA")  # Замените на ваш токен, если не используете .env
 WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
-WEBHOOK_URL = f"https://<YOUR_VERCEL_DOMAIN>{WEBHOOK_PATH}"  # Замените <YOUR_VERCEL_DOMAIN> на ваш домен Vercel
+WEBHOOK_URL = f"https://testwebhuk.vercel.app{WEBHOOK_PATH}"  # Ваш домен на Vercel
 
 if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не найден. Убедитесь, что он указан в .env файле")
+    raise ValueError("BOT_TOKEN не найден. Убедитесь, что он указан в переменных окружения или .env файле")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
